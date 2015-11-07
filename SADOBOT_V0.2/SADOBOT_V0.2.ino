@@ -15,6 +15,14 @@ Distance to liters convertion table for Hippo Pool V0.3
 #include <LiquidCrystal.h> // LCD Library
 // #include <NewPing.h> // Sonar Library
 
+
+// pH sensor stuff
+#define SensorPin 2          //pH meter Analog output to Arduino Analog Input 0
+unsigned long int avgValue;  //Store the average value of the sensor feedback
+float b;
+int buf[10],temp;
+
+
 #define TRIGGER_PIN  8  // Arduino pin tied to trigger pin on the ultrasonic sensor.
 #define ECHO_PIN     9  // Arduino pin tied to echo pin on the ultrasonic sensor.
 #define MAX_DISTANCE 20 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
@@ -71,6 +79,34 @@ void setup() {
 
 
 void loop() {
+
+//Ph Sensor stuff
+
+  for(int i=0;i<10;i++)       //Get 10 sample value from the sensor for smooth the value
+  { 
+    buf[i]=analogRead(SensorPin);
+    delay(10);
+  }
+  for(int i=0;i<9;i++)        //sort the analog from small to large
+  {
+    for(int j=i+1;j<10;j++)
+    {
+      if(buf[i]>buf[j])
+      {
+        temp=buf[i];
+        buf[i]=buf[j];
+        buf[j]=temp;
+      }
+    }
+  }
+  avgValue=0;
+  for(int i=2;i<8;i++)                      //take the average value of 6 center sample
+    avgValue+=buf[i];
+  float phValue=(float)avgValue*5.0/1024/6; //convert the analog into millivolt
+  phValue=3.5*phValue;                      //convert the millivolt into pH value
+
+// end of pH sensor stuff
+
   uint16_t value = analogRead (IRpin);
   double distance = get_IR (value);
   
@@ -97,22 +133,25 @@ void loop() {
   //Printout
   Serial.print("Infrared ");
   Serial.print (average);
-  Serial.print ("cm ");
+  Serial.print ("cm    ");
   Serial.print("Vol ");
   Serial.print (water_volume);
   Serial.print ("l ");
+  Serial.print("    pH:");  
+  Serial.print(phValue,2);
   Serial.println ();
   lcd.begin(16, 2);
   lcd.setCursor(0, 0);
 //  lcd.print("Sonar       ");
 //  lcd.print(sonar.ping_cm()); // Send ping, get distance in cm and print result (0 = outside set distance range);
   lcd.print("Vol ");
-  lcd.print (water_volume);
+  lcd.print (water_volume,1);
   lcd.print ("L ");
   lcd.print (average);
   lcd.print ("cm");
-//  lcd.setCursor(0, 1);
-  
+  lcd.setCursor(0, 1);
+  lcd.print("pH:");  
+  lcd.print(phValue,2);
   delay(500);                     // Wait 50ms between pings (about 20 pings/sec). 29ms should be the shortest delay between pings.
   
 }
