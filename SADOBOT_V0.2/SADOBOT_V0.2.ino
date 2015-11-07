@@ -9,6 +9,12 @@ Distance to liters convertion table for Hippo Pool V0.3
 5 - 9.03 - 9.31 - 6 - Norm
 6 - 8.44 - 8.80 - 5 - Max
 7 - 7.47 - 8.21 - 4 Critical 
+
+Light Sensor values
+<80 - no light
+100- - ambient light
+>500 - grow lamp
+
 */
 
 
@@ -53,7 +59,7 @@ LiquidCrystal lcd(2, 3, 10, 11, 12, 13);
 // the more the readings will be smoothed, but the slower the output will
 // respond to the input.  Using a constant rather than a normal variable lets
 // use this value to determine the size of the readings array.
-const int numReadings = 20;
+const int numReadings = 40;
 
 // Approximator
 
@@ -62,7 +68,7 @@ int readIndex = 0;              // the index of the current reading
 double total = 0;                  // the running total
 double average = 0;                // the average
 
-
+const int LightTreshhold = 500;// Light On/Off toggle
 
 // Water
 float water_level(float);
@@ -141,6 +147,11 @@ void loop() {
   Serial.print(phValue,2);
   Serial.print("        Light:"); 
   Serial.print(analogRead(LightSensePin));
+  if (LightSensePin >= LightTreshhold) {
+    Serial.print("     ON");
+    } else { 
+      Serial.print("     OFF");
+    }
   Serial.println ();
   lcd.begin(16, 2);
   lcd.setCursor(0, 0);
@@ -156,6 +167,8 @@ void loop() {
   lcd.print(phValue,2);
   lcd.print(" Lt:"); 
   lcd.print(analogRead(LightSensePin));
+ 
+  
   delay(500);                     // Wait 50ms between pings (about 20 pings/sec). 29ms should be the shortest delay between pings.
   
 }
