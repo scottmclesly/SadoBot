@@ -22,10 +22,10 @@ unsigned long int avgValue;  //Store the average value of the sensor feedback
 float b;
 int buf[10],temp;
 
-
-#define TRIGGER_PIN  8  // Arduino pin tied to trigger pin on the ultrasonic sensor.
-#define ECHO_PIN     9  // Arduino pin tied to echo pin on the ultrasonic sensor.
-#define MAX_DISTANCE 20 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
+#define LightSensePin 0 // Arduino pin tied to trigger pin on the Light.
+//#define TRIGGER_PIN  8  // Arduino pin tied to trigger pin on the ultrasonic sensor.
+//#define ECHO_PIN     9  // Arduino pin tied to echo pin on the ultrasonic sensor.
+//#define MAX_DISTANCE 20 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
 #define IRpin A2 // Arduino pin tied to InfraRed sensor
 // NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE); // NewPing setup of pins and maximum distance.
 
@@ -139,6 +139,8 @@ void loop() {
   Serial.print ("l ");
   Serial.print("    pH:");  
   Serial.print(phValue,2);
+  Serial.print("        Light:"); 
+  Serial.print(analogRead(LightSensePin));
   Serial.println ();
   lcd.begin(16, 2);
   lcd.setCursor(0, 0);
@@ -150,8 +152,10 @@ void loop() {
   lcd.print (average);
   lcd.print ("cm");
   lcd.setCursor(0, 1);
-  lcd.print("pH:");  
+  lcd.print("pH: ");  
   lcd.print(phValue,2);
+  lcd.print(" Lt:"); 
+  lcd.print(analogRead(LightSensePin));
   delay(500);                     // Wait 50ms between pings (about 20 pings/sec). 29ms should be the shortest delay between pings.
   
 }
